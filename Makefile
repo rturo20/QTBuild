@@ -25,7 +25,8 @@ $(TARGET): $(OBJECTS)
 
 # Run the application
 run: $(TARGET)
-	./$(TARGET)
+	# Suppress QStandardPaths permission warnings
+	QT_LOGGING_RULES="qt.qpa.*=false" ./$(TARGET)
 
 # Clean build artifacts
 clean:
@@ -44,6 +45,10 @@ install-deps:
 install-deps-rpi:
 	sudo apt-get update
 	sudo apt-get install -y build-essential qt5-default pkg-config
+
+# Fix Qt runtime directory permissions (for Raspberry Pi)
+fix-permissions:
+	chmod 700 /run/user/1000
 
 # Debug build
 debug: CXXFLAGS += -g -DDEBUG
@@ -64,7 +69,8 @@ help:
 	@echo "  release      - Build optimized release version"
 	@echo "  install-deps - Install dependencies (Ubuntu/Debian)"
 	@echo "  install-deps-rpi - Install dependencies (Raspberry Pi OS)"
+	@echo "  fix-permissions - Fix Qt runtime directory permissions"
 	@echo "  help         - Show this help message"
 
 # Phony targets
-.PHONY: all run clean distclean debug release install-deps install-deps-rpi help 
+.PHONY: all run clean distclean debug release install-deps install-deps-rpi fix-permissions help 
